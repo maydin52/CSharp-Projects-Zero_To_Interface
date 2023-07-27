@@ -1,0 +1,205 @@
+
+Kullanılacak Teknolojiler
+  *** Genel OOP
+  *** Generic Listeler
+  *** Inheritance
+  *** Polymorphism
+  *** Interfaces
+
+Soru:Bir market icin belirli urunler ile ilgili olarak bir uygulama geliştirilecektir. Bu ürünler, Şişe Süt, KagitHavlu, Bulgur, Yumurta, Yogurt, Bardak olacaktir. Bu urunlerin ürünlerin verilerini saklayan, bazı ürünlerde SKT tarihi geçen, bazı ürünlerde TETT'i geçen ve kırık olan ürünleri, raporlayan uygulamayı OOP kullanarak yazınız?
+
+Odev: SKT ve TETT gecen urunleri bulunuz?
+    : *** Projeyi sakince incele...
+    : *** Fire verme ile ilgili yapıyı sisteme ekleyiniz?(Fire ve Fire nedeni...)
+    : TETT'i geçmiş olan ürünlere indirim uygulama...
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal static class Market
+    {
+        static List<Urun> _urunler = new List<Urun>();
+        public static void UrunEkle(Urun urun)
+        {
+            _urunler.Add(urun);
+        }
+
+        public static List<Urun> TumUrunler()
+        {
+           return _urunler;
+        }
+
+        //Raporlar...
+        public static List<Urun> KirikUrunler()
+        {
+            List<Urun> _kirikUrunler = new List<Urun>();
+            foreach (Urun urun in _urunler)
+            {
+                if (urun is IKirilabilir)
+                { 
+                    
+                     if(((IKirilabilir)urun).KirikMi)
+                        _kirikUrunler.Add(urun);
+                }
+            }
+            return _kirikUrunler;
+        }
+
+        public static List<Urun> BozukUrunler()
+        {
+            return _urunler;
+        }
+
+        public static List<Urun> TavsiyeEdilenTarihiGecmisUrunler()
+        {
+            return _urunler;
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal class Bardak : Urun, IKirilabilir
+    {
+        public bool KirikMi { get; set; }
+
+        public override string ToString()
+        {
+            return $"{UrunID} {UrunAdi} {Fiyat} {KirikMi}";
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal class Bulgur : Urun, ITETT
+    {
+        public DateTime TETT { get; set; }
+
+        public override string ToString()
+        {
+            return $"{UrunID} {UrunAdi} {Fiyat} {TETT}";
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal interface IKirilabilir
+    {
+        public bool KirikMi { get; set; }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal interface ISKT
+    {
+        public DateTime SKT { get; set; }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal interface ITETT
+    {
+        public DateTime TETT { get; set; }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal class KagitHavlu:Urun
+    {
+        public override string ToString()
+        {
+            return $"{UrunID} {UrunAdi} {Fiyat}";
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal class SiseSut : Urun, IKirilabilir,ISKT
+    {
+        public bool KirikMi { get; set; }
+        public DateTime SKT { get; set; }
+
+       
+        public override string ToString()
+        {
+             return $"{UrunID} {UrunAdi} {Fiyat} {KirikMi} {SKT}";
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal abstract class Urun
+    {
+        public int UrunID { get; set; }
+        public string UrunAdi { get; set; }
+        public double  Fiyat { get; set; }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal class Yogurt : Urun, ISKT
+    {
+        public DateTime SKT { get; set; }
+
+        public override string ToString()
+        {
+            return $"{UrunID} {UrunAdi} {Fiyat} {SKT}";
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+internal class Yumurta : Urun, IKirilabilir, ISKT
+    {
+        public DateTime SKT { get; set; }
+        public bool KirikMi { get; set; }
+
+        public override string ToString()
+        {
+            return $"{UrunID} {UrunAdi} {Fiyat} {KirikMi} {SKT}";
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            Market.UrunEkle(new Bardak { UrunID = 101, UrunAdi = "6 lı Su Bardagi", Fiyat = 110, KirikMi = false });
+            Market.UrunEkle(new Bardak { UrunID = 103, UrunAdi = "6 lı cay Bardagi", Fiyat = 75, KirikMi = true });
+
+            Market.UrunEkle(new Bulgur { UrunID = 112, UrunAdi = "İnce Bulgur", Fiyat = 25, TETT = new DateTime(2023, 6, 30) });
+            Market.UrunEkle(new Bulgur { UrunID = 115, UrunAdi = "İri Bulgur", Fiyat = 30, TETT = new DateTime(2023, 8, 30) });
+
+
+            Market.UrunEkle(new KagitHavlu { UrunID = 121, UrunAdi = "24lu Kagit Havlu", Fiyat = 230 });
+
+            Market.UrunEkle(new SiseSut { UrunID = 135, UrunAdi = "Gunluk Inek Sutu", Fiyat = 40, KirikMi = false, SKT = new DateTime(2023, 7, 25) });
+            Market.UrunEkle(new SiseSut { UrunID = 136, UrunAdi = "Gunluk Keci Sutu", Fiyat = 80, KirikMi = false, SKT = new DateTime(2023, 7, 22) });
+
+            Market.UrunEkle(new Yogurt { UrunID = 156, UrunAdi = "1kg Tam yaglı Yogurt", Fiyat = 40, SKT = new DateTime(2023, 8, 12) });
+
+            Market.UrunEkle(new Yumurta { UrunID = 186, UrunAdi = "6lı MBoy Yumurta", Fiyat = 25, KirikMi = false, SKT = new DateTime(2023, 8, 12) });
+            Market.UrunEkle(new Yumurta { UrunID = 187, UrunAdi = "12lı MBoy Yumurta", Fiyat = 45, KirikMi = true, SKT = new DateTime(2023, 8, 10) });
+            Market.UrunEkle(new Yumurta { UrunID = 189, UrunAdi = "12lı MBoy Gezen Yumurta", Fiyat = 55, KirikMi = true, SKT = new DateTime(2023, 7, 12) });
+
+        }
+
+        private void btnTumUrunler_Click(object sender, EventArgs e)
+        {
+            listBox1.DataSource = Market.TumUrunler();
+        }
+
+        private void btnKiriklar_Click(object sender, EventArgs e)
+        {
+            listBox1.DataSource = Market.KirikUrunler();
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
